@@ -2,11 +2,17 @@ import React from 'react'
 import {TouchableOpacity, Text, Image, View} from 'react-native';
 
 // если слишком много тегов или они слишком длинные
-// по клику переход к просмотру коллекции
 
-export const CollectionListItem = ({ imgUrl, title, description, tags, index }) => {
+export const ListItem = ({ id, onChange, imgUrl, title, description, tags, index }) => {
+    const handleItemPress = (id) => {
+        onChange(id, title)
+    }
+
     return (
-        <TouchableOpacity className={`flex flex-row mb-2 p-6 rounded-md items-center ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}>
+        <TouchableOpacity
+            className={`flex flex-row mb-2 p-6 rounded-md items-center ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
+            onPress={() => handleItemPress(id)}
+        >
             <Image
                 source={{ uri: imgUrl }}
                 className='h-20 w-20 rounded'

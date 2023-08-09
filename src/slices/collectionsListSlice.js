@@ -5,7 +5,7 @@ const initialState = {
 }
 
 export const collectionsListSlice = createSlice({
-  name: 'basket',
+  name: 'collectionsList',
   initialState,
   reducers: {
     addCollectionsList: (state, action) => {

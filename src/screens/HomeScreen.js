@@ -10,8 +10,8 @@ import {
     Text
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import {MagnifyingGlassIcon, PlusIcon} from 'react-native-heroicons/outline';
-import {CollectionsList} from '../components/CollectionsList';
+import {MagnifyingGlassIcon, PlusIcon, Cog8ToothIcon} from 'react-native-heroicons/outline';
+import {List} from '../components/List';
 import {TagCloud} from '../components/TagCloud';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -84,13 +84,26 @@ export const HomeScreen = () => {
                         keyboardType='default'
                     />
                 </View>
+                <TouchableOpacity
+                    className='flex flex-row p-2 justify-center items-center'
+                    onPress={() => console.log('settings')}
+                >
+                    <Cog8ToothIcon size={30} color='gray' />
+                </TouchableOpacity>
             </View>
 
             {/* Tag cloud */}
             <TagCloud categories={categories} />
 
-            {/* Body */}
-            <CollectionsList categories={filteredCategories} />
+            {/* Collections list */}
+            <List
+                listItems={filteredCategories}
+                emptyText='There are no collections yet. Add a new one!'
+                containerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingHorizontal: 10, paddingVertical: 4 }}
+                onChange={(id, title) => navigation.navigate('CollectionViewScreen', { id, title })}
+            />
+
+            <View className='h-px bg-gray-300 mx-10' />
 
             {/* Add button */}
             <TouchableOpacity
@@ -107,6 +120,7 @@ export const HomeScreen = () => {
 const SafeViewAndroid = StyleSheet.create({
     AndroidSafeArea: {
         flex: 1,
+        flexGrow: 1,
         backgroundColor: "white",
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight+15 : 5,
     }
