@@ -1,4 +1,4 @@
-import React, {useLayoutEffect} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {
     SafeAreaView,
     TextInput,
@@ -7,7 +7,8 @@ import {
     StatusBar,
     View,
     TouchableOpacity,
-    Text
+    Text,
+    ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {MagnifyingGlassIcon, PlusIcon, Cog8ToothIcon} from 'react-native-heroicons/outline';
@@ -19,59 +20,44 @@ import {
     selectCollectionsListItems,
     selectFilteredCollectionsListItems
 } from '../slices/collectionsListSlice';
-
-const mockCategories = [
-    {
-        id: 1,
-        title: 'Dolls',
-        image: 'https://www.youloveit.com/uploads/posts/2022-02/1645621435_youloveit_com_naturalistas_dolls.jpg',
-        description: 'My dolls',
-        tags: ['dolls', 'things']
-    },
-    {
-        id: 2,
-        title: 'Books',
-        image: 'https://cdn.pixabay.com/photo/2016/02/16/21/07/books-1204029_640.jpg',
-        description: 'My books',
-        tags: ['books', 'things']
-    },
-    {
-        id: 3,
-        title: 'Games',
-        image: 'https://www.pcworld.com/wp-content/uploads/2023/04/playstation-studios.jpg',
-        description: 'My games',
-        tags: ['games', 'digital']
-    },
-    {
-        id: 4,
-        title: 'Board games',
-        image: 'https://mykindofmeeple.com/wp-content/uploads/2019/01/board-game-boards-1602-27042020.jpg',
-        description: 'My board games',
-        tags: ['games', 'things', 'more', 'stupid', 'tags', 'yay!']
-    },
-    {
-        id: 5,
-        title: 'Funko figures',
-        image: 'https://funko.com/dw/image/v2/BGTS_PRD/on/demandware.static/-/Sites-FunkoUS-Library/default/dwe41b4c63/images/funko/blog/20190625_TheGodfather-FunkoPop.jpg',
-        description: 'My Funko figures',
-        tags: ['things']
-    }
-]
+import SanityClient from '../../sanity';
 
 export const HomeScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch()
     const categories = useSelector(selectCollectionsListItems)
     const filteredCategories = useSelector(selectFilteredCollectionsListItems)
+    const [isLoading, setIsLoading] = useState(false);
 
     useLayoutEffect(() => {
-        dispatch(addCollectionsList(mockCategories))
-        dispatch(filterCollectionsList(null))
-
         navigation.setOptions({
             headerShown: false,
         })
     }, [])
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                setIsLoading(true)
+
+                const collectionsData = await SanityClient.fetch(`
+                *[_type == 'collection'] {
+                  ...
+                }
+            `);
+
+                dispatch(addCollectionsList(collectionsData))
+                dispatch(filterCollectionsList(null))
+            } catch (error) {
+                console.log(error)
+            }
+            finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchCategories()
+    }, []);
 
     return (
         <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
@@ -96,19 +82,27 @@ export const HomeScreen = () => {
             <TagCloud categories={categories} />
 
             {/* Collections list */}
-            <List
-                listItems={filteredCategories}
-                emptyText='There are no collections yet. Add a new one!'
-                containerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingHorizontal: 10, paddingVertical: 4 }}
-                onChange={(id, title) => navigation.navigate('CollectionViewScreen', { id, title })}
-            />
+            {
+                isLoading ?
+                    <View className='flex-1 justify-center items-center'>
+                        <ActivityIndicator size="large" color="#D1D5DB" />
+                    </View>
+                    : (
+                        <List
+                            listItems={filteredCategories}
+                            emptyText='There are no collections yet. Add a new one!'
+                            containerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingHorizontal: 10, paddingVertical: 4 }}
+                            onChange={(id, title) => navigation.navigate('CollectionViewScreen', { id, title })}
+                        />
+                    )
+            }
 
             <View className='h-px bg-gray-300 mx-10' />
 
             {/* Add button */}
             <TouchableOpacity
                 className='flex flex-row p-4 justify-center items-center'
-                onPress={() => console.log('add')}
+                onPress={() => navigation.navigate('FormScreen')}
             >
                 <PlusIcon size={20} color='black' />
                 <Text className='text-center text-black text-lg ml-4'>Add collection</Text>

@@ -17,7 +17,9 @@ export const collectionsListSlice = createSlice({
       if (!action.payload) {
         state.filteredList = [...state.list]
       } else {
-        state.filteredList = [...state.list?.filter(item => item?.tags?.includes(action.payload))]
+        state.filteredList = [...state.list?.filter(item => {
+          return item?.myTags?.find(tag => tag.value === action.payload)
+        })]
       }
     },
   },

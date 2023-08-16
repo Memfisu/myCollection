@@ -19,18 +19,18 @@ export const List = ({ listItems, emptyText, onChange, containerStyle }) => {
             renderItem={({item, index}) => {
                 return (
                     <ListItem
-                        key={item.id}
-                        id={item.id}
+                        key={item._id}
+                        id={item._id}
                         onChange={onChange}
-                        imgUrl={item.image}
+                        imgUrl={item.collectionIcon || item.itemIcon}
                         title={item.title}
                         description={item.description}
-                        tags={item.tags}
+                        tags={item.myTags}
                         index={index}
                     />
                 )
             }}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item._id}
             contentContainerStyle={containerStyle}
             ListEmptyComponent={() => EmptyComponent(emptyText)}
         />

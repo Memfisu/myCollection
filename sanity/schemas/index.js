@@ -1,0 +1,5 @@
+import collection from './collection'
+import collectionItem from './item'
+import collectionFields from './collectionFields'
+
+export const schemaTypes = [collection, collectionItem, collectionFields]
