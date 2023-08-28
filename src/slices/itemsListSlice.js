@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  items: [],
+  list: [],
+  filteredList: []
 }
 
 export const itemsListSlice = createSlice({
@@ -10,12 +11,25 @@ export const itemsListSlice = createSlice({
   reducers: {
     addItemsList: (state, action) => {
       state.list = [...action.payload]
+      state.filteredList = [...action.payload]
+    },
+    searchItemsList: (state, action) => {
+      const searchString = action.payload?.searchString
+
+      if (!searchString) {
+        state.filteredList = [...state.list]
+      } else {
+        state.filteredList = [...state.list?.filter(item =>
+            item.title?.toLowerCase().includes(searchString.toLowerCase())
+            || item.description?.toLowerCase().includes(searchString.toLowerCase()))
+        ]
+      }
     },
   },
 })
 
-export const { addItemsList } = itemsListSlice.actions
+export const { addItemsList, searchItemsList } = itemsListSlice.actions
 
-export const selectItemsListItems = state => state.itemsList.list
+export const selectItemsListItems = state => state.itemsList.filteredList
 
 export default itemsListSlice.reducer

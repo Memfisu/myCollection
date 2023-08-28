@@ -17,6 +17,7 @@ export const List = ({ listItems, emptyText, onChange, containerStyle }) => {
         <FlatList
             data={listItems}
             renderItem={({item, index}) => {
+                console.log('item', item)
                 return (
                     <ListItem
                         key={item._id}
@@ -26,6 +27,7 @@ export const List = ({ listItems, emptyText, onChange, containerStyle }) => {
                         title={item.title}
                         description={item.description}
                         tags={item.myTags}
+                        items={item.items}
                         index={index}
                     />
                 )

@@ -16,7 +16,9 @@ import {List} from '../components/List';
 import {TagCloud} from '../components/TagCloud';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-    addCollectionsList, filterCollectionsList,
+    addCollectionsList,
+    filterCollectionsList,
+    searchCollectionsList,
     selectCollectionsListItems,
     selectFilteredCollectionsListItems
 } from '../slices/collectionsListSlice';
@@ -28,6 +30,7 @@ export const HomeScreen = () => {
     const categories = useSelector(selectCollectionsListItems)
     const filteredCategories = useSelector(selectFilteredCollectionsListItems)
     const [isLoading, setIsLoading] = useState(false);
+    const [searchString, setSearchString] = useState('');
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -59,6 +62,12 @@ export const HomeScreen = () => {
         fetchCategories()
     }, []);
 
+    useEffect(() => {
+        if (searchString === '' || searchString?.length >= 3) {
+            dispatch(searchCollectionsList({ searchString }));
+        }
+    }, [searchString]);
+
     return (
         <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
             {/* Search */}
@@ -68,6 +77,7 @@ export const HomeScreen = () => {
                     <TextInput
                         placeholder='Search collection'
                         keyboardType='default'
+                        onChangeText={setSearchString}
                     />
                 </View>
                 <TouchableOpacity

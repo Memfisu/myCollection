@@ -1,9 +1,10 @@
 import {InputTemplate} from '../fields/InputTemplate';
-import {Text} from 'react-native';
+import {ImageUploaderTemplate} from '../fields/ImageUploaderTemplate';
+import {TagsInputTemplate} from '../fields/TagsInputTemplate';
 
 export const fieldTypeConfig = {
     string: <InputTemplate />,
     text: <InputTemplate />,
-    image: <Text>image</Text>,
-    tags: <Text>tags</Text>,
+    image: <ImageUploaderTemplate />,
+    tags: <TagsInputTemplate />,
 };

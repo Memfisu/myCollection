@@ -35,6 +35,12 @@ export default defineType({
           { title: 'Tags', value: 'tags' },
         ],
       },
-    })
+    }),
+    defineField({
+      name: 'schemeName',
+      title: 'Field name in scheme',
+      type: 'string',
+      validation: (Rule) => Rule.required()
+    }),
   ],
 })

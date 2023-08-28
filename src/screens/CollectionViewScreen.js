@@ -7,12 +7,12 @@ import {
     View,
     TouchableOpacity,
     Text,
-    ActivityIndicator
+    ActivityIndicator, TextInput
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {PencilIcon, TrashIcon, ArrowUturnLeftIcon, PlusIcon} from 'react-native-heroicons/outline';
+import {PencilIcon, TrashIcon, ArrowUturnLeftIcon, PlusIcon, MagnifyingGlassIcon} from 'react-native-heroicons/outline';
 import {List} from '../components/List';
-import {addItemsList, selectItemsListItems} from '../slices/itemsListSlice';
+import {addItemsList, searchItemsList, selectItemsListItems} from '../slices/itemsListSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import SanityClient from '../../sanity';
 
@@ -22,6 +22,7 @@ export const CollectionViewScreen = () => {
     const listItems = useSelector(selectItemsListItems)
     const navigation = useNavigation();
     const [isLoading, setIsLoading] = useState(false);
+    const [searchString, setSearchString] = useState('');
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -63,6 +64,12 @@ export const CollectionViewScreen = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (searchString === '' || searchString?.length >= 3) {
+            dispatch(searchItemsList({ searchString }));
+        }
+    }, [searchString]);
+
     return (
         <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
             {/* go back button, header, edit / remove icons */}
@@ -82,6 +89,15 @@ export const CollectionViewScreen = () => {
            </View>
 
             <View className='h-px bg-gray-300 mx-10' />
+
+           <View className='flex-row space-x-2 mx-10 bg-gray-100 rounded-md p-3 mt-4 mb-2'>
+                <MagnifyingGlassIcon size={20} color='gray' />
+                <TextInput
+                    placeholder='Search item'
+                    keyboardType='default'
+                    onChangeText={setSearchString}
+                />
+           </View>
 
             {/* Items list */}
             {

@@ -25,6 +25,15 @@
     },
     "web": {
       "favicon": "./assets/myCollection_icon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "MyCollection accesses your photos to upload an image",
+          "cameraPermission": "MyCollection accesses your camera to upload an image"
+        }
+      ]
+    ]
   }
 }
