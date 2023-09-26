@@ -13,6 +13,9 @@ export const itemsListSlice = createSlice({
       state.list = [...action.payload]
       state.filteredList = [...action.payload]
     },
+    addItemData: (state, action) => {
+      state.item = action.payload
+    },
     searchItemsList: (state, action) => {
       const searchString = action.payload?.searchString
 
@@ -28,8 +31,9 @@ export const itemsListSlice = createSlice({
   },
 })
 
-export const { addItemsList, searchItemsList } = itemsListSlice.actions
+export const { addItemsList, addItemData, searchItemsList } = itemsListSlice.actions
 
 export const selectItemsListItems = state => state.itemsList.filteredList
+export const selectItemData = state => state.itemsList.item
 
 export default itemsListSlice.reducer

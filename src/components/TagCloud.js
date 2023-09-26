@@ -6,8 +6,6 @@ import {
 } from '../slices/collectionsListSlice';
 import {useDispatch, useSelector} from 'react-redux';
 
-// если нет тегов совсем
-
 export const TagCloud = ({ categories }) => {
     if (!categories?.length) {
         return null;
@@ -16,7 +14,7 @@ export const TagCloud = ({ categories }) => {
     const dispatch = useDispatch()
     const selectedTag = useSelector(selectSelectedTag)
 
-    const allTags = categories?.flatMap(category => category.myTags);
+    const allTags = categories?.flatMap(category => category?.myTags || []);
     const tagsCounted = allTags.reduce((acc, item) => {
         if (acc[item.value]) {
             return {

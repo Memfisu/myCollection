@@ -10,7 +10,7 @@ import {
     Text,
     ActivityIndicator
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {MagnifyingGlassIcon, PlusIcon, Cog8ToothIcon} from 'react-native-heroicons/outline';
 import {List} from '../components/List';
 import {TagCloud} from '../components/TagCloud';
@@ -23,6 +23,8 @@ import {
     selectFilteredCollectionsListItems
 } from '../slices/collectionsListSlice';
 import SanityClient from '../../sanity';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {SettingsModal} from '../modals/SettingsModal';
 
 export const HomeScreen = () => {
     const navigation = useNavigation();
@@ -31,6 +33,7 @@ export const HomeScreen = () => {
     const filteredCategories = useSelector(selectFilteredCollectionsListItems)
     const [isLoading, setIsLoading] = useState(false);
     const [searchString, setSearchString] = useState('');
+    const [isSettingsOpened, setIsSettingsOpened] = useState(false);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -59,8 +62,10 @@ export const HomeScreen = () => {
             }
         }
 
-        fetchCategories()
-    }, []);
+        if (!categories?.length) {
+            fetchCategories()
+        }
+    }, [categories]);
 
     useEffect(() => {
         if (searchString === '' || searchString?.length >= 3) {
@@ -68,56 +73,71 @@ export const HomeScreen = () => {
         }
     }, [searchString]);
 
+    const handleBottomSheetChange = (index) => {
+        if (index === -1) {
+            setIsSettingsOpened(false);
+        }
+    }
+
     return (
-        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
-            {/* Search */}
-            <View className='flex-row items-center space-x-2 pb-2 mx-4'>
-                <View className='flex-row flex-1 space-x-2 bg-gray-100 rounded-md p-3'>
-                    <MagnifyingGlassIcon size={20} color='gray' />
-                    <TextInput
-                        placeholder='Search collection'
-                        keyboardType='default'
-                        onChangeText={setSearchString}
-                    />
-                </View>
-                <TouchableOpacity
-                    className='flex flex-row p-2 justify-center items-center'
-                    onPress={() => console.log('settings')}
-                >
-                    <Cog8ToothIcon size={30} color='gray' />
-                </TouchableOpacity>
-            </View>
-
-            {/* Tag cloud */}
-            <TagCloud categories={categories} />
-
-            {/* Collections list */}
-            {
-                isLoading ?
-                    <View className='flex-1 justify-center items-center'>
-                        <ActivityIndicator size="large" color="#D1D5DB" />
-                    </View>
-                    : (
-                        <List
-                            listItems={filteredCategories}
-                            emptyText='There are no collections yet. Add a new one!'
-                            containerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingHorizontal: 10, paddingVertical: 4 }}
-                            onChange={(id, title) => navigation.navigate('CollectionViewScreen', { id, title })}
+        <GestureHandlerRootView style={SafeViewAndroid.GestureHandlerRootView}>
+            <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
+                {/* Search */}
+                <View className='flex-row items-center space-x-2 pb-2 mx-4'>
+                    <View className='flex-row flex-1 space-x-2 bg-gray-100 rounded-md p-3'>
+                        <MagnifyingGlassIcon size={20} color='gray' />
+                        <TextInput
+                            placeholder='Search collection'
+                            keyboardType='default'
+                            onChangeText={setSearchString}
                         />
+                    </View>
+                    <TouchableOpacity
+                        className='flex flex-row p-2 justify-center items-center'
+                        onPress={() => setIsSettingsOpened(!isSettingsOpened)}
+                    >
+                        <Cog8ToothIcon size={30} color='gray' />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Tag cloud */}
+                <TagCloud categories={categories} />
+
+                {/* Collections list */}
+                {
+                    isLoading ?
+                        <View className='flex-1 justify-center items-center'>
+                            <ActivityIndicator size="large" color="#D1D5DB" />
+                        </View>
+                        : (
+                            <List
+                                listItems={filteredCategories}
+                                emptyText='There are no collections yet. Add a new one!'
+                                containerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingHorizontal: 10, paddingVertical: 4 }}
+                                onChange={(id, title) => navigation.navigate('CollectionViewScreen', { id, title })}
+                            />
+                        )
+                }
+
+                <View className='h-px bg-gray-300 mx-10' />
+
+                {/* Add button */}
+                <TouchableOpacity
+                    className='flex flex-row p-4 justify-center items-center'
+                    onPress={() => navigation.navigate('FormScreen')}
+                >
+                    <PlusIcon size={20} color='black' />
+                    <Text className='text-center text-black text-lg ml-4'>Add collection</Text>
+                </TouchableOpacity>
+
+
+                {
+                    isSettingsOpened && (
+                        <SettingsModal onChange={handleBottomSheetChange} />
                     )
-            }
-
-            <View className='h-px bg-gray-300 mx-10' />
-
-            {/* Add button */}
-            <TouchableOpacity
-                className='flex flex-row p-4 justify-center items-center'
-                onPress={() => navigation.navigate('FormScreen')}
-            >
-                <PlusIcon size={20} color='black' />
-                <Text className='text-center text-black text-lg ml-4'>Add collection</Text>
-            </TouchableOpacity>
-        </SafeAreaView>
+                }
+            </SafeAreaView>
+        </GestureHandlerRootView>
     );
 };
 
@@ -127,5 +147,8 @@ const SafeViewAndroid = StyleSheet.create({
         flexGrow: 1,
         backgroundColor: "white",
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight+15 : 5,
+    },
+    GestureHandlerRootView: {
+        flex: 1,
     }
 });

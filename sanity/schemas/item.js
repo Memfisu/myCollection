@@ -17,6 +17,11 @@ export default defineType({
       validation: (Rule) => Rule.required()
     }),
     defineField({
+      name: 'link',
+      title: 'Link to some outer website',
+      type: 'string',
+    }),
+    defineField({
       name: 'description',
       title: 'Item description',
       type: 'text',

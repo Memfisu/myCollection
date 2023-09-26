@@ -1,10 +1,11 @@
 import React from 'react'
 import {TouchableOpacity, Text, Image, View} from 'react-native';
 import {urlFor} from '../../sanity'
+import {PhotoIcon} from 'react-native-heroicons/outline';
 
 export const ListItem = ({ id, onChange, imgUrl, title, description, tags, index, items }) => {
     const handleItemPress = (id) => {
-        onChange(id, title)
+        onChange(id, title, index)
     }
 
     return (
@@ -12,10 +13,14 @@ export const ListItem = ({ id, onChange, imgUrl, title, description, tags, index
             className={`flex flex-row mb-2 p-6 rounded-md items-center max-w-full ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
             onPress={() => handleItemPress(id)}
         >
-            <Image
-                source={{ uri: urlFor(imgUrl).url() }}
-                className='h-20 w-20 rounded'
-            />
+            {
+                imgUrl ? (
+                    <Image
+                        source={{ uri: urlFor(imgUrl).url() }}
+                        className='h-20 w-20 rounded'
+                    />
+                ) : <PhotoIcon size={80} color='gray' />
+            }
             <View className='ml-4 flex-1 w-full'>
                 <View className='flex flex-row items-center pl-1'>
                     <Text className='text-black font-bold text-base'>{title}</Text>
@@ -24,7 +29,7 @@ export const ListItem = ({ id, onChange, imgUrl, title, description, tags, index
                         <Text className='text-gray-600 text-xs ml-2'>{`(${items?.length} items)`}</Text>
                     }
                 </View>
-                <Text className='text-black p-1 mb-2'>{description}</Text>
+                {description && <Text numberOfLines={5} className='text-black p-1 mb-2'>{description}</Text>}
                 {
                     tags?.length ?
                         <View className='flex flex-row flex-wrap w-full'>

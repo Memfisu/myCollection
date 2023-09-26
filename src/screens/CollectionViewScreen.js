@@ -7,7 +7,7 @@ import {
     View,
     TouchableOpacity,
     Text,
-    ActivityIndicator, TextInput
+    ActivityIndicator, TextInput, Modal, Pressable, TouchableWithoutFeedback
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {PencilIcon, TrashIcon, ArrowUturnLeftIcon, PlusIcon, MagnifyingGlassIcon} from 'react-native-heroicons/outline';
@@ -15,6 +15,8 @@ import {List} from '../components/List';
 import {addItemsList, searchItemsList, selectItemsListItems} from '../slices/itemsListSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import SanityClient from '../../sanity';
+import {addCollectionsList} from '../slices/collectionsListSlice';
+import {ModalWindow} from '../components/Modal';
 
 export const CollectionViewScreen = () => {
     const { params: { id, title} } = useRoute();
@@ -23,6 +25,7 @@ export const CollectionViewScreen = () => {
     const navigation = useNavigation();
     const [isLoading, setIsLoading] = useState(false);
     const [searchString, setSearchString] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -53,10 +56,10 @@ export const CollectionViewScreen = () => {
             }
         }
 
-        if (id) {
+        if (!listItems?.length) {
             fetchItems()
         }
-    }, [id]);
+    }, [listItems]);
 
     useEffect(() => {
         return () => {
@@ -70,8 +73,30 @@ export const CollectionViewScreen = () => {
         }
     }, [searchString]);
 
+    const handleRemoveCollection = async (id) => {
+       setModalVisible(false);
+       setIsLoading(true);
+       try {
+           await SanityClient.delete(id)
+       } catch (error) {
+           console.error('Ошибка при удалении:', error)
+       }
+       finally {
+           setIsLoading(false);
+           dispatch(addCollectionsList([]))
+           navigation.navigate('Home');
+       }
+    }
+
     return (
         <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
+            <ModalWindow
+                isModalVisible={modalVisible}
+                setModalVisible={setModalVisible}
+                modalText={`Do you really want to remove collection ${title}?`}
+                onApply={() => handleRemoveCollection(id)}
+            />
+
             {/* go back button, header, edit / remove icons */}
             <View className='flex-row py-4 px-10 justify-between'>
                 <TouchableOpacity onPress={() => navigation.navigate('Home')}>
@@ -82,7 +107,7 @@ export const CollectionViewScreen = () => {
                    <TouchableOpacity onPress={() => console.log('edit')}>
                        <PencilIcon size={25} color='gray' />
                    </TouchableOpacity>
-                   <TouchableOpacity onPress={() => console.log('remove')}>
+                   <TouchableOpacity onPress={() => setModalVisible(true)}>
                        <TrashIcon size={25} color='gray' />
                    </TouchableOpacity>
                </View>
@@ -109,7 +134,7 @@ export const CollectionViewScreen = () => {
                         <List
                             listItems={listItems}
                             emptyText='There are no items yet. Add a new one!'
-                            onChange={(id, title) => navigation.navigate('ItemViewScreen', { id, title })}
+                            onChange={(itemId, itemTitle, itemIndex) => navigation.navigate('ItemViewScreen', { itemId, itemTitle, collectionId: id, collectionTitle: title, itemIndex })}
                             containerStyle={{
                                 flexGrow: 1,
                                 justifyContent: 'flex-start',
