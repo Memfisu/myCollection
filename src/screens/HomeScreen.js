@@ -8,7 +8,7 @@ import {
     View,
     TouchableOpacity,
     Text,
-    ActivityIndicator
+    ActivityIndicator,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {MagnifyingGlassIcon, PlusIcon, Cog8ToothIcon} from 'react-native-heroicons/outline';
@@ -25,6 +25,9 @@ import {
 import SanityClient from '../../sanity';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {SettingsModal} from '../modals/SettingsModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useColorScheme} from 'nativewind';
+import { colors } from '../utils/colors';
 
 export const HomeScreen = () => {
     const navigation = useNavigation();
@@ -34,12 +37,29 @@ export const HomeScreen = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [searchString, setSearchString] = useState('');
     const [isSettingsOpened, setIsSettingsOpened] = useState(false);
+    const {colorScheme, setColorScheme} = useColorScheme();
+    const isDarkTheme = colorScheme === 'dark';
 
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false,
         })
     }, [])
+
+    useEffect(() => {
+        const getData = async () => {
+            try {
+                const value = await AsyncStorage.getItem('theme');
+                if (value !== null) {
+                    setColorScheme(value)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        };
+
+        getData();
+    }, []);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -80,23 +100,29 @@ export const HomeScreen = () => {
     }
 
     return (
-        <GestureHandlerRootView style={SafeViewAndroid.GestureHandlerRootView}>
+        <GestureHandlerRootView style={[SafeViewAndroid.AndroidSafeArea, { backgroundColor: isDarkTheme ? colors.darkMainBG : colors.white }]}>
             <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
-                {/* Search */}
+                {/* todo <StatusBar*/}
+                {/*    barStyle={isDarkTheme ? 'light-content' : 'light-content'}*/}
+                {/*/>*/}
+
+                {/* search and settings */}
                 <View className='flex-row items-center space-x-2 pb-2 mx-4'>
-                    <View className='flex-row flex-1 space-x-2 bg-gray-100 rounded-md p-3'>
-                        <MagnifyingGlassIcon size={20} color='gray' />
+                    <View className='flex-row flex-1 space-x-2 bg-gray-100 dark:bg-gray-500 rounded-md p-3'>
+                        <MagnifyingGlassIcon size={20} color={isDarkTheme ? colors.darkText : 'gray'} />
                         <TextInput
                             placeholder='Search collection'
+                            placeholderTextColor={isDarkTheme ? colors.darkText : 'gray'}
                             keyboardType='default'
                             onChangeText={setSearchString}
+                            className='dark:text-gray-300'
                         />
                     </View>
                     <TouchableOpacity
                         className='flex flex-row p-2 justify-center items-center'
                         onPress={() => setIsSettingsOpened(!isSettingsOpened)}
                     >
-                        <Cog8ToothIcon size={30} color='gray' />
+                        <Cog8ToothIcon size={30} color={isDarkTheme ? colors.darkText : 'gray'} />
                     </TouchableOpacity>
                 </View>
 
@@ -107,7 +133,7 @@ export const HomeScreen = () => {
                 {
                     isLoading ?
                         <View className='flex-1 justify-center items-center'>
-                            <ActivityIndicator size="large" color="#D1D5DB" />
+                            <ActivityIndicator size="large" color={colors.darkText} />
                         </View>
                         : (
                             <List
@@ -124,7 +150,7 @@ export const HomeScreen = () => {
                 {/* Add button */}
                 <TouchableOpacity
                     className='flex flex-row p-4 justify-center items-center'
-                    onPress={() => navigation.navigate('FormScreen')}
+                    onPress={() => navigation.navigate('FormScreen', { context: 'collectionFields'})}
                 >
                     <PlusIcon size={20} color='black' />
                     <Text className='text-center text-black text-lg ml-4'>Add collection</Text>
@@ -145,7 +171,6 @@ const SafeViewAndroid = StyleSheet.create({
     AndroidSafeArea: {
         flex: 1,
         flexGrow: 1,
-        backgroundColor: "white",
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight+15 : 5,
     },
     GestureHandlerRootView: {

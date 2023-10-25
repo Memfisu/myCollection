@@ -151,7 +151,7 @@ export const CollectionViewScreen = () => {
             {/* Add button */}
             <TouchableOpacity
                 className='flex flex-row p-4 justify-center items-center'
-                onPress={() => console.log('add')}
+                onPress={() => navigation.navigate('FormScreen', { context: 'itemFields', collectionId: id, collectionTitle: title })}
             >
                 <PlusIcon size={20} color='black' />
                 <Text className='text-center text-black text-lg ml-4'>Add item</Text>

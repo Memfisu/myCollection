@@ -10,24 +10,25 @@ import {
     ActivityIndicator,
     ScrollView
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {CheckIcon, ArrowUturnLeftIcon} from 'react-native-heroicons/outline';
 import SanityClient from '../../sanity';
 import {addFieldsList, addFieldsValues, selectFieldsList, selectValuesList} from '../slices/formSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import {fieldTypeConfig} from '../utils/fieldsConfig';
-import { decode } from 'base-64';
+import {addCollectionsList} from '../slices/collectionsListSlice';
+import {addItemsList} from '../slices/itemsListSlice';
 
-// кастомные поля?
-// чтобы было универсально для добавления и редактирования - причём и коллекций, и айтемов
-// отправка на бэк + навигация назад + обновление списка коллекций
+// todo edit form
 
 export const FormScreen = () => {
     const dispatch = useDispatch()
     const navigation = useNavigation();
+    const { params: { context, collectionId, collectionTitle } } = useRoute();
     const fields = useSelector(selectFieldsList)
     const values = useSelector(selectValuesList)
     const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -41,7 +42,7 @@ export const FormScreen = () => {
                 setIsLoading(true)
 
                 const fieldsList = await SanityClient.fetch(`
-                *[_type == 'collectionFields'] {
+                *[_type == '${context}'] {
                   ...
                 }
             `);
@@ -58,6 +59,14 @@ export const FormScreen = () => {
         fetchFieldsList()
     }, []);
 
+    const handleGoBack = () => {
+        if (context === 'itemFields') {
+            navigation.navigate('CollectionViewScreen', { id: collectionId, title: collectionTitle });
+        } else {
+            navigation.navigate('Home')
+        }
+    }
+
     const handleFieldChange = ({ fieldName, fieldValue }) => {
         dispatch(addFieldsValues({ fieldName, fieldValue }))
     }
@@ -66,32 +75,34 @@ export const FormScreen = () => {
         try {
             setIsLoading(true)
 
-            if (values?.collectionIcon) {
-                const preparedPath = values?.collectionIcon
-
-                const decodedBlob = new Blob([decode(preparedPath)], { type: 'image/jpeg' });
-                const file = new File([decodedBlob], 'image.jpg', { type: 'image/jpeg' });
-
-                const asset = await SanityClient.assets
-                    .upload('image', [file])
-                    .then(response => {
-                        const imageUrl = response.urls.original;
-                        console.log('Файл успешно загружен, ссылка:', imageUrl);
-                    })
-                    .catch(error => {
-                        console.error('Ошибка при загрузке файла', error);
-                    });
-
-                console.log('asset', asset)
+            if (!values?.title) {
+                setIsError(true)
+                return;
             }
 
-            // const doc = {
-            //     _type: 'collection',
-            //     ...values,
-            // }
-            //
-            // await SanityClient.create(doc)
-            // navigation.navigate('Home')
+            setIsError(false)
+
+            const doc = {
+                _type: context === 'itemFields' ? 'item' : 'collection',
+                ...values,
+                image: null, // todo temporary hack
+                collectionIcon: null, // todo temporary hack,
+            }
+
+            const item = await SanityClient.create(doc);
+
+            if (context === 'itemFields') {
+                await SanityClient
+                    .patch(collectionId)
+                    .setIfMissing({ items: [] })
+                    .append('items', [{ _type: 'reference', _ref: item._id}])
+                    .commit();
+
+                dispatch(addItemsList([]))
+            }
+            dispatch(addCollectionsList([]))
+
+            handleGoBack()
         } catch (error) {
             console.log(error)
         }
@@ -100,16 +111,11 @@ export const FormScreen = () => {
         }
     }
 
-    // иконка - {"_type": "image", "asset": {"_ref": "image-9177dae10a6425909313e183c2f974125a70b2f7-270x187-jpg", "_type": "reference"}
-
-    // сейчас иконка сохраняется как {"assets": [{"assetId": null, "base64": null, "duration": null, "exif": null, "height": 864, "rotation": null, "type": "image", "uri": "file:///data/user/0/host.e
-    // xp.exponent/cache/ExperienceData/%2540memfisu%252FmyCollection/ImagePicker/8f6d7116-5584-4123-9428-140b81080669.png", "width": 1152}], "canceled": false, "cancelled": false}
-
     return (
         <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
             {/* go back button, header */}
             <View className='flex-row py-4 px-10'>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <TouchableOpacity onPress={handleGoBack}>
                     <ArrowUturnLeftIcon size={25} color='gray' />
                 </TouchableOpacity>
                <Text className='text-black text-xl ml-14'>Add new collection</Text>
@@ -126,8 +132,16 @@ export const FormScreen = () => {
                     : (
                         <ScrollView className='flex-1 px-10 py-5 mb-6'>
                             {
+                                isError && (
+                                    <Text className="text-base text-red-700 bg-red-50 p-3 rounded mb-6">
+                                        Please fill at least Title field
+                                    </Text>
+                                )
+                            }
+                            {
                                 fields?.map(item => {
                                     return React.cloneElement(fieldTypeConfig[item?.type], {
+                                        key: item?._id,
                                         field: item,
                                         onChange: handleFieldChange
                                     });

@@ -22,6 +22,16 @@ export default defineType({
       type: 'string',
     }),
     defineField({
+      name: 'releaseDate',
+      title: 'Release date',
+      type: 'date',
+    }),
+    defineField({
+      name: 'acquiredDate',
+      title: 'Date acquired',
+      type: 'date',
+    }),
+    defineField({
       name: 'description',
       title: 'Item description',
       type: 'text',

@@ -58,10 +58,10 @@ export const TagCloud = ({ categories }) => {
             {sortedTags?.map((item, index) => (
                 <TouchableOpacity
                     key={index}
-                    className={`h-8 flex flex-row p-2 ${item.value === selectedTag ? 'bg-gray-600': 'bg-gray-300'} rounded-md ${index ? 'ml-2' : ''}`}
+                    className={`h-8 flex flex-row p-2 ${item.value === selectedTag ? 'bg-gray-600 dark:bg-gray-500': 'bg-gray-300 dark:bg-gray-400'} rounded-md ${index ? 'ml-2' : ''}`}
                     onPress={() => handleTagPress(item.value)}
                 >
-                    <Text className={`text-xs ${item.value === selectedTag ? 'text-white': 'text-black'}`}>{item.label}</Text>
+                    <Text className={`text-xs ${item.value === selectedTag ? 'text-white dark:text-gray-300': 'text-black dark:text-gray-900'}`}>{item.label}</Text>
                 </TouchableOpacity>
             ))}
         </ScrollView>

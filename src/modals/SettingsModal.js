@@ -1,19 +1,49 @@
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View, Switch} from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import {useFocusEffect} from '@react-navigation/native';
+import {useColorScheme} from 'nativewind';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // todo подтягивать текущие настройки юзера
-// todo тёмная тема https://medium.com/simform-engineering/manage-dark-mode-in-react-native-application-2a04ba7e76d0#:~:text=Begin%20by%20importing%20the%20useColorScheme,the%20default%20theme%20is%20light.
 
 export const SettingsModal = ({ onChange }) => {
     const bottomSheetRef = useRef(null);
     const snapPoints = useMemo(() => ['50%', '80%'], []);
-    const [isEnabled, setIsEnabled] = useState(false);
+    const {colorScheme, setColorScheme, toggleColorScheme} = useColorScheme();
+    const [isEnabled, setIsEnabled] = useState(colorScheme === 'dark');
+
+    useEffect(() => {
+        const getData = async () => {
+            try {
+                const value = await AsyncStorage.getItem('theme');
+                if (value !== null) {
+                    setColorScheme(value);
+                    setIsEnabled(value === 'dark');
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        };
+
+        getData();
+    }, [colorScheme]);
+
+    const storeData = async (value) => {
+        try {
+            await AsyncStorage.setItem('theme', value);
+        } catch (error) {
+            console.log(error)
+        }
+    };
 
     const handleClosePress = () => bottomSheetRef.current.close()
 
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const toggleSwitch = async () => {
+        await storeData(isEnabled ? 'light' : 'dark');
+        setIsEnabled(previousState => !previousState);
+        toggleColorScheme();
+    }
 
     useFocusEffect(
         React.useCallback(() => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, TextInput} from 'react-native';
 
-// обработка обязательного поля
+// todo обработка обязательного поля
 
 export const InputTemplate = ({ field, onChange }) => {
     const { _id: id, value, label, type, isRequired, schemeName } = field
@@ -15,7 +15,7 @@ export const InputTemplate = ({ field, onChange }) => {
 
     return (
         <View key={`${id}_${value}`} className='mb-6'>
-            { label && <Text className='text-black font-bold text-base mb-3'>{label}</Text> }
+            { label && <Text className='text-black font-bold text-base mb-3'>{`${label}${isRequired ? '*' : ''}`}</Text> }
             <TextInput
                 className='p-4 border border-gray-300 rounded'
                 cursorColor='gray'

@@ -3,12 +3,6 @@ import {Image, TouchableOpacity, View, Text} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import {TrashIcon} from 'react-native-heroicons/outline';
 
-// сделать просто поле для иконки, на которое нажимаешь - и картинка заменяет поле
-// удаление висит прям на картинке
-// обработка обязательного поля
-
-// надо как-то иначе обрабатывать результат для отправки на бэк
-
 export const ImageUploaderTemplate = ({ field, onChange }) => {
     const { _id: id, value, label, isRequired, schemeName } = field
     const [image, setImage] = useState(null);
@@ -27,7 +21,7 @@ export const ImageUploaderTemplate = ({ field, onChange }) => {
             // todo https://github.com/ben-cdm/Uploading-deleting-and-dowloading-images-uploaded-to-sanity.io/blob/master/frontend/src/components/UploadImage.jsx
             const baseImage = result.base64  //`data:image/jpg;base64,${result.base64}`
 
-            setImage(baseImage);
+            setImage(baseImage); //todo на айфоне не отображается
             onChange({
                 fieldName: schemeName,
                 fieldValue: baseImage

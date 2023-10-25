@@ -19,6 +19,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import { Link } from '../components/Link';
 import {ModalWindow} from '../components/Modal';
 import {addCollectionsList} from '../slices/collectionsListSlice';
+import {prepareBackendDate} from '../utils/prepareDate';
 
 export const ItemViewScreen = () => {
     const { params: { itemId, itemTitle, collectionId, collectionTitle, itemIndex } } = useRoute();
@@ -44,6 +45,8 @@ export const ItemViewScreen = () => {
                        itemIcon,
                        title,
                        link,
+                       acquiredDate,
+                       releaseDate,
                        description
                     }
                 `,  { id: itemId });
@@ -97,7 +100,6 @@ export const ItemViewScreen = () => {
                 <TouchableOpacity onPress={handleGoBack}>
                     <ArrowUturnLeftIcon size={25} color='gray' />
                 </TouchableOpacity>
-               <Text className='text-black text-xl'>{itemTitle}</Text>
                <View className='flex-row w-20 justify-between'>
                    <TouchableOpacity onPress={() => console.log('edit')}>
                        <PencilIcon size={25} color='gray' />
@@ -125,8 +127,20 @@ export const ItemViewScreen = () => {
                                     />
                                 )
                             }
-                            <Text className='text-black font-bold text-2xl px-10 self-center m-4'>{item?.title}</Text>
+                            <Text className='text-black font-bold text-2xl px-10 self-center m-6'>{item?.title}</Text>
                             {item?.link && <Link title="Click here to navigate to the item's website" url={item?.link} additionalClass='px-10 mb-4' />}
+                            {item?.releaseDate && (
+                                <View className='flex flex-row mx-10 text-black text-base mb-4 p-4 rounded-md bg-gray-100'>
+                                    <Text className='font-semibold mr-2'>Release date:</Text>
+                                    <Text>{prepareBackendDate(item?.releaseDate)}</Text>
+                                </View>
+                            )}
+                            {item?.acquiredDate && (
+                                <View className='flex flex-row mx-10 text-black text-base mb-4 p-4 rounded-md bg-gray-100'>
+                                    <Text className='font-semibold mr-2'>Acquired date:</Text>
+                                    <Text>{prepareBackendDate(item?.acquiredDate)}</Text>
+                                </View>
+                            )}
                             {item?.description &&
                                 <ScrollView className='h-2/5'>
                                     <Text className='text-black text-base mx-10 p-4 rounded-md bg-gray-100'>
