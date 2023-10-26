@@ -18,8 +18,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fieldTypeConfig} from '../utils/fieldsConfig';
 import {addCollectionsList} from '../slices/collectionsListSlice';
 import {addItemsList} from '../slices/itemsListSlice';
+import {FORM_HEADER, FORM_SAVE_BUTTON_LABEL, FORM_TITLE_VALIDATION_ERROR} from '../utils/messages';
 
-// todo edit form
+// todo implement edit mode
 
 export const FormScreen = () => {
     const dispatch = useDispatch()
@@ -118,7 +119,9 @@ export const FormScreen = () => {
                 <TouchableOpacity onPress={handleGoBack}>
                     <ArrowUturnLeftIcon size={25} color='gray' />
                 </TouchableOpacity>
-               <Text className='text-black text-xl ml-14'>Add new collection</Text>
+               <Text className='text-black text-xl ml-14'>
+                   {FORM_HEADER(context === 'itemFields' ? 'item' : '')}
+               </Text>
            </View>
 
             <View className='h-px bg-gray-300 mx-10' />
@@ -134,7 +137,7 @@ export const FormScreen = () => {
                             {
                                 isError && (
                                     <Text className="text-base text-red-700 bg-red-50 p-3 rounded mb-6">
-                                        Please fill at least Title field
+                                        {FORM_TITLE_VALIDATION_ERROR}
                                     </Text>
                                 )
                             }
@@ -159,7 +162,7 @@ export const FormScreen = () => {
                 onPress={handleSubmit}
             >
                 <CheckIcon size={20} color='black' />
-                <Text className='text-center text-black text-lg ml-4'>Save</Text>
+                <Text className='text-center text-black text-lg ml-4'>{FORM_SAVE_BUTTON_LABEL}</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );

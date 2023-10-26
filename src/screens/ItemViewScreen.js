@@ -20,6 +20,7 @@ import { Link } from '../components/Link';
 import {ModalWindow} from '../components/Modal';
 import {addCollectionsList} from '../slices/collectionsListSlice';
 import {prepareBackendDate} from '../utils/prepareDate';
+import {ITEM_ACQUIRED_DATE_LABEL, ITEM_RELEASE_DATE_LABEL, ITEM_REMOVE_MODAL_TEXT} from 'src/utils/messages';
 
 export const ItemViewScreen = () => {
     const { params: { itemId, itemTitle, collectionId, collectionTitle, itemIndex } } = useRoute();
@@ -72,7 +73,7 @@ export const ItemViewScreen = () => {
             await SanityClient.patch(collectionId).unset([`items[${itemIndex}]`]).commit();
             await SanityClient.delete(id);
         } catch (error) {
-            console.error('Ошибка при удалении:', error)
+            console.error(error)
         }
         finally {
             setIsLoading(false);
@@ -91,7 +92,7 @@ export const ItemViewScreen = () => {
             <ModalWindow
                 isModalVisible={modalVisible}
                 setModalVisible={setModalVisible}
-                modalText={`Do you really want to remove item ${itemTitle}?`}
+                modalText={ITEM_REMOVE_MODAL_TEXT(itemTitle)}
                 onApply={() => handleRemoveItem(itemId)}
             />
 
@@ -112,6 +113,7 @@ export const ItemViewScreen = () => {
 
             <View className='h-px bg-gray-300 mx-10' />
 
+            {/* item fields */}
             {
                 isLoading ?
                     <View className='flex-1 justify-center items-center'>
@@ -131,13 +133,13 @@ export const ItemViewScreen = () => {
                             {item?.link && <Link title="Click here to navigate to the item's website" url={item?.link} additionalClass='px-10 mb-4' />}
                             {item?.releaseDate && (
                                 <View className='flex flex-row mx-10 text-black text-base mb-4 p-4 rounded-md bg-gray-100'>
-                                    <Text className='font-semibold mr-2'>Release date:</Text>
+                                    <Text className='font-semibold mr-2'>{ITEM_RELEASE_DATE_LABEL}</Text>
                                     <Text>{prepareBackendDate(item?.releaseDate)}</Text>
                                 </View>
                             )}
                             {item?.acquiredDate && (
                                 <View className='flex flex-row mx-10 text-black text-base mb-4 p-4 rounded-md bg-gray-100'>
-                                    <Text className='font-semibold mr-2'>Acquired date:</Text>
+                                    <Text className='font-semibold mr-2'>{ITEM_ACQUIRED_DATE_LABEL}</Text>
                                     <Text>{prepareBackendDate(item?.acquiredDate)}</Text>
                                 </View>
                             )}

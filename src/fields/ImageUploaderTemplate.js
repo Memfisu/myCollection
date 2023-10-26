@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {Image, TouchableOpacity, View, Text} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import {TrashIcon} from 'react-native-heroicons/outline';
+import {IMAGE_UPLOADER_HINT} from '../utils/messages';
 
 export const ImageUploaderTemplate = ({ field, onChange }) => {
     const { _id: id, value, label, isRequired, schemeName } = field
@@ -17,9 +18,7 @@ export const ImageUploaderTemplate = ({ field, onChange }) => {
         });
 
         if (!result.canceled) {
-            // todo https://www.section.io/engineering-education/uploading-deleting-and-downloading-images-uploaded-to-sanity-io/
-            // todo https://github.com/ben-cdm/Uploading-deleting-and-dowloading-images-uploaded-to-sanity.io/blob/master/frontend/src/components/UploadImage.jsx
-            const baseImage = result.base64  //`data:image/jpg;base64,${result.base64}`
+            const baseImage = result.base64
 
             setImage(baseImage); //todo на айфоне не отображается
             onChange({
@@ -45,7 +44,7 @@ export const ImageUploaderTemplate = ({ field, onChange }) => {
                     className='bg-gray-500 rounded-lg w-full p-6 flex items-center justify-center'
                     onPress={pickImage}
                 >
-                    <Text className='text-white text-base'>Pick an icon from your gallery</Text>
+                    <Text className='text-white text-base'>{IMAGE_UPLOADER_HINT}</Text>
                 </TouchableOpacity>
             </View>
         </View>

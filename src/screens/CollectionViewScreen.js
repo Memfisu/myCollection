@@ -7,7 +7,8 @@ import {
     View,
     TouchableOpacity,
     Text,
-    ActivityIndicator, TextInput, Modal, Pressable, TouchableWithoutFeedback
+    ActivityIndicator,
+    TextInput
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {PencilIcon, TrashIcon, ArrowUturnLeftIcon, PlusIcon, MagnifyingGlassIcon} from 'react-native-heroicons/outline';
@@ -17,6 +18,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import SanityClient from '../../sanity';
 import {addCollectionsList} from '../slices/collectionsListSlice';
 import {ModalWindow} from '../components/Modal';
+import {
+    COLLECTION_ADD_BUTTON_LABEL,
+    COLLECTION_REMOVE_MODAL_TEXT,
+    COLLECTION_SEARCH_PLACEHOLDER,
+    COLLECTIONS_LIST_EMPTY_TEXT
+} from '../utils/messages';
 
 export const CollectionViewScreen = () => {
     const { params: { id, title} } = useRoute();
@@ -79,7 +86,7 @@ export const CollectionViewScreen = () => {
        try {
            await SanityClient.delete(id)
        } catch (error) {
-           console.error('Ошибка при удалении:', error)
+           console.error(error)
        }
        finally {
            setIsLoading(false);
@@ -93,7 +100,7 @@ export const CollectionViewScreen = () => {
             <ModalWindow
                 isModalVisible={modalVisible}
                 setModalVisible={setModalVisible}
-                modalText={`Do you really want to remove collection ${title}?`}
+                modalText={COLLECTION_REMOVE_MODAL_TEXT(title)}
                 onApply={() => handleRemoveCollection(id)}
             />
 
@@ -115,16 +122,17 @@ export const CollectionViewScreen = () => {
 
             <View className='h-px bg-gray-300 mx-10' />
 
+           {/* search */}
            <View className='flex-row space-x-2 mx-10 bg-gray-100 rounded-md p-3 mt-4 mb-2'>
                 <MagnifyingGlassIcon size={20} color='gray' />
                 <TextInput
-                    placeholder='Search item'
+                    placeholder={COLLECTION_SEARCH_PLACEHOLDER}
                     keyboardType='default'
                     onChangeText={setSearchString}
                 />
            </View>
 
-            {/* Items list */}
+            {/* items list */}
             {
                 isLoading ?
                     <View className='flex-1 justify-center items-center'>
@@ -133,7 +141,7 @@ export const CollectionViewScreen = () => {
                     : (
                         <List
                             listItems={listItems}
-                            emptyText='There are no items yet. Add a new one!'
+                            emptyText={COLLECTIONS_LIST_EMPTY_TEXT}
                             onChange={(itemId, itemTitle, itemIndex) => navigation.navigate('ItemViewScreen', { itemId, itemTitle, collectionId: id, collectionTitle: title, itemIndex })}
                             containerStyle={{
                                 flexGrow: 1,
@@ -154,7 +162,7 @@ export const CollectionViewScreen = () => {
                 onPress={() => navigation.navigate('FormScreen', { context: 'itemFields', collectionId: id, collectionTitle: title })}
             >
                 <PlusIcon size={20} color='black' />
-                <Text className='text-center text-black text-lg ml-4'>Add item</Text>
+                <Text className='text-center text-black text-lg ml-4'>{COLLECTION_ADD_BUTTON_LABEL}</Text>
             </TouchableOpacity>
         </SafeAreaView>
     );

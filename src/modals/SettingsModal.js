@@ -4,6 +4,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import {useFocusEffect} from '@react-navigation/native';
 import {useColorScheme} from 'nativewind';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SETTINGS_CLOSE_BUTTON, SETTINGS_DARK_MODE_LABEL, SETTINGS_HEADER} from '../utils/messages';
 
 // todo подтягивать текущие настройки юзера
 
@@ -62,12 +63,12 @@ export const SettingsModal = ({ onChange }) => {
         >
             <View className='flex flex-1'>
                 <View className='flex justify-center items-center flex-row relative mb-4 px-5'>
-                    <Text className='text-black text-xl'>Settings</Text>
+                    <Text className='text-black text-xl'>{SETTINGS_HEADER}</Text>
                     <TouchableOpacity
                         className='absolute right-7'
                         onPress={handleClosePress}
                     >
-                        <Text className='text-gray-600 text-base'>Done</Text>
+                        <Text className='text-gray-600 text-base'>{SETTINGS_CLOSE_BUTTON}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -75,7 +76,7 @@ export const SettingsModal = ({ onChange }) => {
                     <View className='h-px bg-gray-300' />
 
                     <View className='flex flex-row items-center p-4 bg-white m-6 rounded-lg'>
-                        <Text className='text-black text-base mr-6'>Dark mode</Text>
+                        <Text className='text-black text-base mr-6'>{SETTINGS_DARK_MODE_LABEL}</Text>
                         <Switch
                             trackColor={{false: '#767577', true: '#f4f3f4'}}
                             thumbColor={isEnabled ? '#767577' : '#F3F4F6'}

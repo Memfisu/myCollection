@@ -1,6 +1,7 @@
 import React, {useCallback} from 'react';
 import {Alert, Linking, Text, TouchableOpacity, View} from 'react-native';
 import {LinkIcon} from 'react-native-heroicons/outline';
+import {LINK_OPEN_ERROR} from '../utils/messages';
 
 export const Link = ({ url, title, additionalClass }) => {
     const handlePress = useCallback(async () => {
@@ -9,7 +10,7 @@ export const Link = ({ url, title, additionalClass }) => {
         if (supported) {
             await Linking.openURL(url);
         } else {
-            Alert.alert(`Unable to open, check the link ${url}`);
+            Alert.alert(LINK_OPEN_ERROR(url));
         }
     }, [url]);
 

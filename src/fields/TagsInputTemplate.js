@@ -4,8 +4,8 @@ import {CheckIcon, TrashIcon} from 'react-native-heroicons/outline';
 import uuid from 'uuid-random';
 import {camelize} from '../utils/camelize';
 
-// подсказка по уже имеющимся тегам
-// обработка обязательного поля
+// todo подсказка по уже имеющимся тегам
+// todo обработка обязательного поля
 
 export const TagsInputTemplate = ({ field, onChange }) => {
     const { _id: id, value, label, isRequired, schemeName } = field

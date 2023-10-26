@@ -1,5 +1,6 @@
 import {Modal, Text, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
 import React from 'react';
+import {MODAL_CANCEL_BUTTON, MODAL_OK_BUTTON} from '../utils/messages';
 
 export const ModalWindow = ({
     isModalVisible,
@@ -30,13 +31,13 @@ export const ModalWindow = ({
                                     onPress={onApply}
                                     className="text-black text-base font-bold"
                                 >
-                                    <Text className='text-black text-base font-bold'>Yes</Text>
+                                    <Text className='text-black text-base font-bold'>{MODAL_OK_BUTTON}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={handleCancel}
                                     className="text-black text-base font-bold"
                                 >
-                                    <Text className='text-black text-base font-bold'>No</Text>
+                                    <Text className='text-black text-base font-bold'>{MODAL_CANCEL_BUTTON}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

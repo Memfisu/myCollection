@@ -28,6 +28,11 @@ import {SettingsModal} from '../modals/SettingsModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useColorScheme} from 'nativewind';
 import { colors } from '../utils/colors';
+import {
+    HOME_SCREEN_ADD_BUTTON_LABEL,
+    HOME_SCREEN_LIST_EMPTY_TEXT,
+    HOME_SCREEN_SEARCH_PLACEHOLDER
+} from 'src/utils/messages';
 
 export const HomeScreen = () => {
     const navigation = useNavigation();
@@ -67,10 +72,10 @@ export const HomeScreen = () => {
                 setIsLoading(true)
 
                 const collectionsData = await SanityClient.fetch(`
-                *[_type == 'collection'] {
-                  ...
-                }
-            `);
+                    *[_type == 'collection'] {
+                      ...
+                    }
+                `);
 
                 dispatch(addCollectionsList(collectionsData))
                 dispatch(filterCollectionsList(null))
@@ -111,7 +116,7 @@ export const HomeScreen = () => {
                     <View className='flex-row flex-1 space-x-2 bg-gray-100 dark:bg-gray-500 rounded-md p-3'>
                         <MagnifyingGlassIcon size={20} color={isDarkTheme ? colors.darkText : 'gray'} />
                         <TextInput
-                            placeholder='Search collection'
+                            placeholder={HOME_SCREEN_SEARCH_PLACEHOLDER}
                             placeholderTextColor={isDarkTheme ? colors.darkText : 'gray'}
                             keyboardType='default'
                             onChangeText={setSearchString}
@@ -126,10 +131,10 @@ export const HomeScreen = () => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Tag cloud */}
+                {/* tag cloud */}
                 <TagCloud categories={categories} />
 
-                {/* Collections list */}
+                {/* collections list */}
                 {
                     isLoading ?
                         <View className='flex-1 justify-center items-center'>
@@ -138,7 +143,7 @@ export const HomeScreen = () => {
                         : (
                             <List
                                 listItems={filteredCategories}
-                                emptyText='There are no collections yet. Add a new one!'
+                                emptyText={HOME_SCREEN_LIST_EMPTY_TEXT}
                                 containerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingHorizontal: 10, paddingVertical: 4 }}
                                 onChange={(id, title) => navigation.navigate('CollectionViewScreen', { id, title })}
                             />
@@ -153,7 +158,7 @@ export const HomeScreen = () => {
                     onPress={() => navigation.navigate('FormScreen', { context: 'collectionFields'})}
                 >
                     <PlusIcon size={20} color='black' />
-                    <Text className='text-center text-black text-lg ml-4'>Add collection</Text>
+                    <Text className='text-center text-black text-lg ml-4'>{HOME_SCREEN_ADD_BUTTON_LABEL}</Text>
                 </TouchableOpacity>
 
 
