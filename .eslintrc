@@ -1,0 +1,56 @@
+{
+	"root": true,
+	"parser": "babel-eslint",
+	"extends": [
+		"prettier",
+		"plugin:react/recommended"
+	],
+	"plugins": [
+		"react",
+		"import",
+		"prettier"
+	],
+	"ignorePatterns": ["node_modules/**/**"],
+	"rules": {
+		"prettier/prettier": [
+			"error",
+			{
+				"quoteProps": "consistent",
+				"singleQuote": true,
+				"tabWidth": 2,
+				"trailingComma": "es5",
+				"useTabs": false
+			}
+		],
+		"brace-style": ["error", "1tbs"],
+		"no-alert": "warn",
+		"no-unused-vars": "error",
+		"react/prop-types": "warn",
+		"curly": "error",
+		"padding-line-between-statements": [
+			"error",
+			{
+				"blankLine": "always",
+				"prev": ["const", "let", "var"],
+				"next": "*"
+			},
+			{
+				"blankLine": "any",
+				"prev": ["const", "let", "var"],
+				"next": ["const", "let", "var"]
+			},
+			{
+				"blankLine": "always",
+				"prev": "*",
+				"next": "return"
+			},
+			{
+				"blankLine": "always",
+				"prev": "block-like",
+				"next": "*"
+			}
+		],
+		"no-restricted-imports": ["error"],
+		"no-shadow": "error"
+	}
+}

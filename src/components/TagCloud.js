@@ -1,69 +1,88 @@
 import React from 'react';
-import {ScrollView, Text, TouchableOpacity} from 'react-native';
+import { ScrollView, Text, TouchableOpacity } from 'react-native';
 import {
-    filterCollectionsList,
-    selectSelectedTag
+  filterCollectionsList,
+  selectSelectedTag,
 } from '../slices/collectionsListSlice';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 export const TagCloud = ({ categories }) => {
-    if (!categories?.length) {
-        return null;
+  if (!categories?.length) {
+    return null;
+  }
+
+  const dispatch = useDispatch();
+  const selectedTag = useSelector(selectSelectedTag);
+
+  const allTags = categories?.flatMap((category) => category?.myTags || []);
+  const tagsCounted = allTags.reduce((acc, item) => {
+    if (acc[item.value]) {
+      return {
+        ...acc,
+        [item.value]: {
+          label: item.label,
+          value: item.value,
+          count: acc[item.value] + 1,
+        },
+      };
     }
 
-    const dispatch = useDispatch()
-    const selectedTag = useSelector(selectSelectedTag)
+    return {
+      ...acc,
+      [item.value]: {
+        label: item.label,
+        value: item.value,
+        count: 1,
+      },
+    };
+  }, {});
+  const sortedTags = Object.values(tagsCounted).sort(
+    (a, b) => tagsCounted[b.count] - tagsCounted[a.count]
+  );
 
-    const allTags = categories?.flatMap(category => category?.myTags || []);
-    const tagsCounted = allTags.reduce((acc, item) => {
-        if (acc[item.value]) {
-            return {
-                ...acc,
-                [item.value]: {
-                    label: item.label,
-                    value: item.value,
-                    count: acc[item.value] + 1
-                }
-            }
-        }
+  const handleTagPress = (value) => {
+    dispatch(filterCollectionsList(selectedTag === value ? null : value));
+  };
 
-        return {
-            ...acc,
-            [item.value]: {
-                label: item.label,
-                value: item.value,
-                count: 1
-            }
-        }
-    }, {})
-    const sortedTags = Object.values(tagsCounted).sort((a, b) => tagsCounted[b.count] - tagsCounted[a.count]);
-
-    const handleTagPress = (value) => {
-        dispatch(filterCollectionsList(selectedTag === value ? null : value))
-    }
-
-    return (
-        <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{
-                flexGrow: 0
-            }}
-            contentContainerStyle={{
-                paddingHorizontal: 15,
-                paddingTop: 10,
-                paddingBottom: 35,
-            }}
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={{
+        flexGrow: 0,
+      }}
+      contentContainerStyle={{
+        paddingHorizontal: 15,
+        paddingTop: 10,
+        paddingBottom: 35,
+      }}
+    >
+      {sortedTags?.map((item, index) => (
+        <TouchableOpacity
+          key={index}
+          className={`h-8 flex flex-row p-2 ${
+            item.value === selectedTag
+              ? 'bg-gray-600 dark:bg-gray-500'
+              : 'bg-gray-300 dark:bg-gray-400'
+          } rounded-md ${index ? 'ml-2' : ''}`}
+          onPress={() => handleTagPress(item.value)}
         >
-            {sortedTags?.map((item, index) => (
-                <TouchableOpacity
-                    key={index}
-                    className={`h-8 flex flex-row p-2 ${item.value === selectedTag ? 'bg-gray-600 dark:bg-gray-500': 'bg-gray-300 dark:bg-gray-400'} rounded-md ${index ? 'ml-2' : ''}`}
-                    onPress={() => handleTagPress(item.value)}
-                >
-                    <Text className={`text-xs ${item.value === selectedTag ? 'text-white dark:text-gray-300': 'text-black dark:text-gray-900'}`}>{item.label}</Text>
-                </TouchableOpacity>
-            ))}
-        </ScrollView>
-    )
+          <Text
+            className={`text-xs ${
+              item.value === selectedTag
+                ? 'text-white dark:text-gray-300'
+                : 'text-black dark:text-gray-900'
+            }`}
+          >
+            {item.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+};
+
+TagCloud.propTypes = {
+  categories: PropTypes.array,
 };
