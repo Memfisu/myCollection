@@ -36,7 +36,7 @@ import {
   HOME_SCREEN_ADD_BUTTON_LABEL,
   HOME_SCREEN_LIST_EMPTY_TEXT,
   HOME_SCREEN_SEARCH_PLACEHOLDER,
-} from 'src/utils/messages';
+} from '../utils/messages';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();

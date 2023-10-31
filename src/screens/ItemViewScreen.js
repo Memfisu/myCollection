@@ -32,7 +32,7 @@ import {
   ITEM_ACQUIRED_DATE_LABEL,
   ITEM_RELEASE_DATE_LABEL,
   ITEM_REMOVE_MODAL_TEXT,
-} from 'src/utils/messages';
+} from '../utils/messages';
 
 export const ItemViewScreen = () => {
   const {
