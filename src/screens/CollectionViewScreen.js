@@ -34,6 +34,7 @@ import {
   COLLECTION_SEARCH_PLACEHOLDER,
   COLLECTIONS_LIST_EMPTY_TEXT,
 } from '../utils/messages';
+import { CONTEXT, MODE } from '../utils/constants';
 
 export const CollectionViewScreen = () => {
   const {
@@ -124,7 +125,16 @@ export const CollectionViewScreen = () => {
         </TouchableOpacity>
         <Text className="text-black text-xl">{title}</Text>
         <View className="flex-row w-20 justify-between">
-          <TouchableOpacity onPress={() => console.log('edit')}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('FormScreen', {
+                context: CONTEXT.collectionFields,
+                mode: MODE.edit,
+                collectionId: id,
+                collectionTitle: title,
+              })
+            }
+          >
             <PencilIcon size={25} color="gray" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setModalVisible(true)}>
@@ -180,7 +190,8 @@ export const CollectionViewScreen = () => {
         className="flex flex-row p-4 justify-center items-center"
         onPress={() =>
           navigation.navigate('FormScreen', {
-            context: 'itemFields',
+            context: CONTEXT.itemFields,
+            mode: MODE.create,
             collectionId: id,
             collectionTitle: title,
           })

@@ -37,6 +37,7 @@ import {
   HOME_SCREEN_LIST_EMPTY_TEXT,
   HOME_SCREEN_SEARCH_PLACEHOLDER,
 } from '../utils/messages';
+import { CONTEXT, MODE } from '../utils/constants';
 
 export const HomeScreen = () => {
   const navigation = useNavigation();
@@ -176,7 +177,10 @@ export const HomeScreen = () => {
         <TouchableOpacity
           className="flex flex-row p-4 justify-center items-center"
           onPress={() =>
-            navigation.navigate('FormScreen', { context: 'collectionFields' })
+            navigation.navigate('FormScreen', {
+              context: CONTEXT.collectionFields,
+              mode: MODE.create,
+            })
           }
         >
           <PlusIcon size={20} color="black" />

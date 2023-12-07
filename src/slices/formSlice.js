@@ -18,10 +18,14 @@ export const formSlice = createSlice({
         [action.payload.fieldName]: action.payload.fieldValue,
       };
     },
+    clearFieldsValues: (state) => {
+      state.values = {};
+    },
   },
 });
 
-export const { addFieldsList, addFieldsValues } = formSlice.actions;
+export const { addFieldsList, addFieldsValues, clearFieldsValues } =
+  formSlice.actions;
 
 export const selectFieldsList = (state) => state.formFields.fields;
 export const selectValuesList = (state) => state.formFields.values;

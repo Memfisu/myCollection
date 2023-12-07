@@ -33,6 +33,7 @@ import {
   ITEM_RELEASE_DATE_LABEL,
   ITEM_REMOVE_MODAL_TEXT,
 } from '../utils/messages';
+import { CONTEXT, MODE } from '../utils/constants';
 
 export const ItemViewScreen = () => {
   const {
@@ -125,7 +126,17 @@ export const ItemViewScreen = () => {
           <ArrowUturnLeftIcon size={25} color="gray" />
         </TouchableOpacity>
         <View className="flex-row w-20 justify-between">
-          <TouchableOpacity onPress={() => console.log('edit')}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('FormScreen', {
+                context: CONTEXT.itemFields,
+                mode: MODE.edit,
+                itemId,
+                itemTitle,
+                collectionId,
+              })
+            }
+          >
             <PencilIcon size={25} color="gray" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setModalVisible(true)}>

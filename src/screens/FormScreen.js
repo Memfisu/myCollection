@@ -16,6 +16,7 @@ import SanityClient from '../../sanity';
 import {
   addFieldsList,
   addFieldsValues,
+  clearFieldsValues,
   selectFieldsList,
   selectValuesList,
 } from '../slices/formSlice';
@@ -24,18 +25,20 @@ import { fieldTypeConfig } from '../utils/fieldsConfig';
 import { addCollectionsList } from '../slices/collectionsListSlice';
 import { addItemsList } from '../slices/itemsListSlice';
 import {
-  FORM_HEADER,
+  ADD_FORM_HEADER,
+  EDIT_FORM_HEADER,
   FORM_SAVE_BUTTON_LABEL,
   FORM_TITLE_VALIDATION_ERROR,
 } from '../utils/messages';
+import { CONTEXT, MODE } from '../utils/constants';
 
-// todo implement edit mode
+// todo refactor all of this
 
 export const FormScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const {
-    params: { context, collectionId, collectionTitle },
+    params: { context, collectionId, collectionTitle, mode, itemId, itemTitle },
   } = useRoute();
   const fields = useSelector(selectFieldsList);
   const values = useSelector(selectValuesList);
@@ -59,6 +62,44 @@ export const FormScreen = () => {
                 }
             `);
 
+        if (mode === MODE.edit && context === CONTEXT.collectionFields) {
+          const itemsData = await SanityClient.fetch(
+            `
+                  *[_type == 'collection' && _id == $id] {
+                     ...,
+                     myTags[]{
+                           ...,
+                       }
+                  }
+              `,
+            { id: collectionId }
+          );
+
+          Object.entries(itemsData?.[0])?.forEach(([key, value]) => {
+            dispatch(addFieldsValues({ fieldName: key, fieldValue: value }));
+          });
+        }
+
+        if (mode === MODE.edit && context === CONTEXT.itemFields) {
+          const itemsData = await SanityClient.fetch(
+            `
+                    *[_type == 'item' && _id == $id] {
+                       itemIcon,
+                       title,
+                       link,
+                       acquiredDate,
+                       releaseDate,
+                       description
+                    }
+                `,
+            { id: itemId }
+          );
+
+          Object.entries(itemsData?.[0])?.forEach(([key, value]) => {
+            dispatch(addFieldsValues({ fieldName: key, fieldValue: value }));
+          });
+        }
+
         dispatch(addFieldsList(fieldsList));
       } catch (error) {
         console.log(error);
@@ -70,8 +111,14 @@ export const FormScreen = () => {
     fetchFieldsList();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      dispatch(clearFieldsValues());
+    };
+  }, []);
+
   const handleGoBack = () => {
-    if (context === 'itemFields') {
+    if (context === CONTEXT.itemFields) {
       navigation.navigate('CollectionViewScreen', {
         id: collectionId,
         title: collectionTitle,
@@ -98,26 +145,40 @@ export const FormScreen = () => {
       setIsError(false);
 
       const doc = {
-        _type: context === 'itemFields' ? 'item' : 'collection',
+        _type: context === CONTEXT.itemFields ? 'item' : 'collection',
         ...values,
         image: null, // todo temporary hack
         collectionIcon: null, // todo temporary hack,
       };
 
-      const item = await SanityClient.create(doc);
+      if (mode === MODE.create) {
+        const item = await SanityClient.create(doc);
 
-      if (context === 'itemFields') {
-        await SanityClient.patch(collectionId)
-          .setIfMissing({ items: [] })
-          .append('items', [{ _type: 'reference', _ref: item._id }])
-          .commit();
+        if (context === CONTEXT.itemFields) {
+          await SanityClient.patch(collectionId)
+            .setIfMissing({ items: [] })
+            .append('items', [{ _type: 'reference', _ref: item._id }])
+            .commit();
 
-        dispatch(addItemsList([]));
+          dispatch(addItemsList([]));
+        }
+
+        dispatch(addCollectionsList([]));
+
+        handleGoBack();
+      } else {
+        if (context === CONTEXT.itemFields) {
+          await SanityClient.patch(itemId).set(doc).commit();
+
+          dispatch(addItemsList([]));
+        } else {
+          await SanityClient.patch(collectionId).set(doc).commit();
+        }
+
+        dispatch(addCollectionsList([]));
+
+        handleGoBack();
       }
-
-      dispatch(addCollectionsList([]));
-
-      handleGoBack();
     } catch (error) {
       console.log(error);
     } finally {
@@ -133,7 +194,9 @@ export const FormScreen = () => {
           <ArrowUturnLeftIcon size={25} color="gray" />
         </TouchableOpacity>
         <Text className="text-black text-xl ml-14">
-          {FORM_HEADER(context === 'itemFields' ? 'item' : '')}
+          {mode === MODE.edit
+            ? EDIT_FORM_HEADER(collectionTitle || itemTitle)
+            : ADD_FORM_HEADER(context === CONTEXT.itemFields ? 'item' : '')}
         </Text>
       </View>
 
@@ -155,6 +218,7 @@ export const FormScreen = () => {
             return React.cloneElement(fieldTypeConfig[item?.type], {
               key: item?._id,
               field: item,
+              defaultValue: values?.[item.schemeName],
               onChange: handleFieldChange,
             });
           })}

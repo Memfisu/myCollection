@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 // todo обработка обязательного поля
 
-export const InputTemplate = ({ field, onChange }) => {
+export const InputTemplate = ({ field, defaultValue, onChange }) => {
   const { _id: id, value, label, type, isRequired, schemeName } = field;
 
   const handleChange = (inputValue) => {
@@ -25,7 +25,7 @@ export const InputTemplate = ({ field, onChange }) => {
         className="p-4 border border-gray-300 rounded"
         cursorColor="gray"
         onChangeText={handleChange}
-        value={value}
+        value={value || defaultValue}
         multiline={type === 'text'}
         numberOfLines={type === 'text' ? 4 : 1}
       />
@@ -36,4 +36,5 @@ export const InputTemplate = ({ field, onChange }) => {
 InputTemplate.propTypes = {
   field: PropTypes.object,
   onChange: PropTypes.func,
+  defaultValue: PropTypes.string,
 };

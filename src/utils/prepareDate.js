@@ -28,3 +28,14 @@ export const prepareDatePickerDate = (originalDate) => {
 
   return `${year}-${month}-${day}`;
 };
+
+// 2020-08-22 to 2020-08-21T23:15:30.000Z
+export const prepareEditDate = (date) => {
+  const dateComponents = date.split('-');
+
+  return new Date(
+    parseInt(dateComponents[0], 10),
+    parseInt(dateComponents[1], 10) - 1,
+    parseInt(dateComponents[2], 10)
+  );
+};

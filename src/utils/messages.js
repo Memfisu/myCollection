@@ -26,7 +26,8 @@ export const COLLECTIONS_LIST_EMPTY_TEXT =
 export const COLLECTION_ADD_BUTTON_LABEL = 'Add item';
 
 // FormScreen.js
-export const FORM_HEADER = (context) => `Add new collection ${context}`;
+export const ADD_FORM_HEADER = (context) => `Add new collection ${context}`;
+export const EDIT_FORM_HEADER = (name) => `Edit ${name}`;
 export const FORM_TITLE_VALIDATION_ERROR = 'Please fill at least Title field';
 export const FORM_SAVE_BUTTON_LABEL = 'Save';
 

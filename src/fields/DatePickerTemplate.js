@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { prepareDatePickerDate } from '../utils/prepareDate';
+import { prepareDatePickerDate, prepareEditDate } from '../utils/prepareDate';
 import { DATE_PICKER_HINT, DATE_PICKER_SELECT_DATE } from '../utils/messages';
 import PropTypes from 'prop-types';
 
-export const DatePickerTemplate = ({ field, onChange }) => {
+export const DatePickerTemplate = ({ field, defaultValue, onChange }) => {
   const { _id: id, value, label, schemeName } = field;
   const isIos = Platform.OS === 'ios';
+  const preparedDefaultDate = defaultValue
+    ? prepareEditDate(defaultValue)
+    : new Date();
 
-  const [date, setDate] = useState(new Date(1598051730000));
+  const [date, setDate] = useState(preparedDefaultDate);
   const [show, setShow] = useState(isIos);
+
+  useEffect(() => {
+    onChange({
+      fieldName: schemeName,
+      fieldValue: prepareDatePickerDate(preparedDefaultDate),
+    });
+  }, []);
 
   const handleChange = (event, currentValue) => {
     if (!isIos) {
@@ -33,7 +43,7 @@ export const DatePickerTemplate = ({ field, onChange }) => {
       {label && (
         <Text className="text-black font-bold text-base mb-3">{label}</Text>
       )}
-      <View className="flex-row items-center">
+      <View className="flex-row items-center justify-between">
         {isIos ? (
           <Text className="text-black text-base">{DATE_PICKER_HINT}</Text>
         ) : (
@@ -67,4 +77,5 @@ export const DatePickerTemplate = ({ field, onChange }) => {
 DatePickerTemplate.propTypes = {
   field: PropTypes.object,
   onChange: PropTypes.func,
+  defaultValue: PropTypes.string,
 };

@@ -63,9 +63,9 @@ export const ListItem = ({
 };
 
 ListItem.propTypes = {
-  id: PropTypes.number.isRequired,
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   onChange: PropTypes.func,
-  imgUrl: PropTypes.string,
+  imgUrl: PropTypes.object,
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
   tags: PropTypes.array,

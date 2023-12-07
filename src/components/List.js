@@ -14,19 +14,19 @@ export const List = ({ listItems, emptyText, onChange, containerStyle }) => {
       renderItem={({ item, index }) => {
         return (
           <ListItem
-            key={item._id}
-            id={item._id}
+            key={item?._id}
+            id={item?._id}
             onChange={onChange}
-            imgUrl={item.collectionIcon || item.itemIcon}
-            title={item.title}
-            description={item.description}
-            tags={item.myTags}
-            items={item.items}
+            imgUrl={item?.collectionIcon || item?.itemIcon}
+            title={item?.title}
+            description={item?.description}
+            tags={item?.myTags}
+            items={item?.items}
             index={index}
           />
         );
       }}
-      keyExtractor={(item) => item._id}
+      keyExtractor={(item) => item?._id}
       contentContainerStyle={containerStyle}
       ListEmptyComponent={() => EmptyComponent(emptyText)}
     />
@@ -37,5 +37,5 @@ List.propTypes = {
   listItems: PropTypes.array,
   emptyText: PropTypes.string,
   onChange: PropTypes.func,
-  containerStyle: PropTypes.string,
+  containerStyle: PropTypes.object,
 };
