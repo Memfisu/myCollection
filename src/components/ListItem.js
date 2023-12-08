@@ -34,7 +34,7 @@ export const ListItem = ({
         <PhotoIcon size={80} color="gray" />
       )}
       <View className="ml-4 flex-1 w-full">
-        <View className="flex flex-row items-center pl-1">
+        <View className="flex flex-row items-center pl-1 mb-2">
           <Text className="text-black font-bold text-base">{title}</Text>
           {items?.length > 0 && (
             <Text className="text-gray-600 text-xs ml-2">{`(${items?.length} items)`}</Text>

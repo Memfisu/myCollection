@@ -148,7 +148,9 @@ export const HomeScreen = () => {
         </View>
 
         {/* tag cloud */}
-        <TagCloud categories={categories} />
+        <View className="h-24">
+          <TagCloud categories={categories} />
+        </View>
 
         {/* collections list */}
         {isLoading ? (

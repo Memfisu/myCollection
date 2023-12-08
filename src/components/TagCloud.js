@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import Swiper from 'react-native-swiper';
 import {
   filterCollectionsList,
   selectSelectedTag,
@@ -41,45 +42,64 @@ export const TagCloud = ({ categories }) => {
     (a, b) => tagsCounted[b.count] - tagsCounted[a.count]
   );
 
+  const screenWidth = Dimensions.get('window').width;
+  const tagsPerPage = Math.floor(screenWidth / 100);
+
+  const pages = [];
+
+  sortedTags.forEach((tag, index) => {
+    if (index % tagsPerPage === 0) {
+      const pageStart = index;
+      const pageEnd = Math.min(index + tagsPerPage, sortedTags.length);
+      const page = sortedTags.slice(pageStart, pageEnd);
+
+      pages.push(page);
+    }
+  });
+
   const handleTagPress = (value) => {
     dispatch(filterCollectionsList(selectedTag === value ? null : value));
   };
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={{
-        flexGrow: 0,
-      }}
-      contentContainerStyle={{
-        paddingHorizontal: 15,
-        paddingTop: 10,
-        paddingBottom: 35,
-      }}
+    <Swiper
+      loop={false}
+      dotStyle={{ backgroundColor: 'gray' }}
+      activeDotStyle={{ backgroundColor: 'black' }}
     >
-      {sortedTags?.map((item, index) => (
-        <TouchableOpacity
-          key={index}
-          className={`h-8 flex flex-row p-2 ${
-            item.value === selectedTag
-              ? 'bg-gray-600 dark:bg-gray-500'
-              : 'bg-gray-300 dark:bg-gray-400'
-          } rounded-md ${index ? 'ml-2' : ''}`}
-          onPress={() => handleTagPress(item.value)}
+      {pages.map((tags, pageIndex) => (
+        <ScrollView
+          key={pageIndex}
+          horizontal
+          contentContainerStyle={{
+            paddingHorizontal: 15,
+            paddingTop: 10,
+          }}
         >
-          <Text
-            className={`text-xs ${
-              item.value === selectedTag
-                ? 'text-white dark:text-gray-300'
-                : 'text-black dark:text-gray-900'
-            }`}
-          >
-            {item.label}
-          </Text>
-        </TouchableOpacity>
+          {tags.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              className={`h-8 flex flex-row p-2 ${
+                item.value === selectedTag
+                  ? 'bg-gray-600 dark:bg-gray-500'
+                  : 'bg-gray-300 dark:bg-gray-400'
+              } rounded-md ${index ? 'ml-2' : ''}`}
+              onPress={() => handleTagPress(item.value)}
+            >
+              <Text
+                className={`text-xs ${
+                  item.value === selectedTag
+                    ? 'text-white dark:text-gray-300'
+                    : 'text-black dark:text-gray-900'
+                }`}
+              >
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       ))}
-    </ScrollView>
+    </Swiper>
   );
 };
 
