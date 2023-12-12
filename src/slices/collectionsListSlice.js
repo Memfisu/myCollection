@@ -12,6 +12,9 @@ export const collectionsListSlice = createSlice({
     addCollectionsList: (state, action) => {
       state.list = [...action.payload];
     },
+    updateFilteredCollectionsList: (state, action) => {
+      state.filteredList = [...action.payload];
+    },
     filterCollectionsList: (state, action) => {
       state.selectedTag = action.payload;
 
@@ -49,6 +52,7 @@ export const {
   addCollectionsList,
   filterCollectionsList,
   searchCollectionsList,
+  updateFilteredCollectionsList,
 } = collectionsListSlice.actions;
 
 export const selectCollectionsListItems = (state) => state.collectionsList.list;

@@ -22,6 +22,7 @@ import { List } from '../components/List';
 import {
   addItemsList,
   searchItemsList,
+  updateFilteredItemsList,
   selectItemsListItems,
 } from '../slices/itemsListSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -109,6 +110,10 @@ export const CollectionViewScreen = () => {
     }
   };
 
+  const handleDragEnd = (data) => {
+    dispatch(updateFilteredItemsList(data?.data));
+  };
+
   return (
     <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
       <ModalWindow
@@ -180,6 +185,7 @@ export const CollectionViewScreen = () => {
             marginTop: 20,
             maxWidth: '100%',
           }}
+          onDragEnd={handleDragEnd}
         />
       )}
 

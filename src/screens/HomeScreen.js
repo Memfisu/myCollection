@@ -23,6 +23,7 @@ import {
   addCollectionsList,
   filterCollectionsList,
   searchCollectionsList,
+  updateFilteredCollectionsList,
   selectCollectionsListItems,
   selectFilteredCollectionsListItems,
 } from '../slices/collectionsListSlice';
@@ -109,24 +110,32 @@ export const HomeScreen = () => {
     }
   };
 
+  const handleDragEnd = (data) => {
+    dispatch(updateFilteredCollectionsList(data?.data));
+  };
+
   return (
     <GestureHandlerRootView
       style={[
-        SafeViewAndroid.AndroidSafeArea,
+        SafeViewAndroid.GestureHandlerRootView,
         { backgroundColor: isDarkTheme ? colors.darkMainBG : colors.white },
       ]}
     >
       <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
-        {/* todo <StatusBar*/}
-        {/*    barStyle={isDarkTheme ? 'light-content' : 'light-content'}*/}
-        {/*/>*/}
-
         {/* search and settings */}
-        <View className="flex-row items-center space-x-2 pb-2 mx-4">
-          <View className="flex-row flex-1 space-x-2 bg-gray-100 dark:bg-gray-500 rounded-md p-3">
+        <View
+          className={`flex-row items-center space-x-2 pb-2 mx-4 ${
+            Platform.OS === 'ios' && 'mt-4'
+          }`}
+        >
+          <View
+            className={`flex-row flex-1 space-x-2 rounded-md p-3 ${
+              isDarkTheme ? 'bg-gray-500' : 'bg-gray-100'
+            }`}
+          >
             <MagnifyingGlassIcon
               size={20}
-              color={isDarkTheme ? colors.darkText : 'gray'}
+              color={isDarkTheme ? 'white' : 'gray'}
             />
             <TextInput
               placeholder={HOME_SCREEN_SEARCH_PLACEHOLDER}
@@ -170,6 +179,7 @@ export const HomeScreen = () => {
             onChange={(id, title) =>
               navigation.navigate('CollectionViewScreen', { id, title })
             }
+            onDragEnd={handleDragEnd}
           />
         )}
 
@@ -203,9 +213,10 @@ const SafeViewAndroid = StyleSheet.create({
   AndroidSafeArea: {
     flex: 1,
     flexGrow: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 15 : 5,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 5,
   },
   GestureHandlerRootView: {
     flex: 1,
+    flexGrow: 1,
   },
 });

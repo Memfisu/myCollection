@@ -16,6 +16,9 @@ export const itemsListSlice = createSlice({
     addItemData: (state, action) => {
       state.item = action.payload;
     },
+    updateFilteredItemsList: (state, action) => {
+      state.filteredList = [...action.payload];
+    },
     searchItemsList: (state, action) => {
       const searchString = action.payload?.searchString;
 
@@ -36,8 +39,12 @@ export const itemsListSlice = createSlice({
   },
 });
 
-export const { addItemsList, addItemData, searchItemsList } =
-  itemsListSlice.actions;
+export const {
+  addItemsList,
+  addItemData,
+  searchItemsList,
+  updateFilteredItemsList,
+} = itemsListSlice.actions;
 
 export const selectItemsListItems = (state) => state.itemsList.filteredList;
 export const selectItemData = (state) => state.itemsList.item;

@@ -13,6 +13,8 @@ export const ListItem = ({
   tags,
   index,
   items,
+  drag,
+  isActive,
 }) => {
   const handleItemPress = (itemId) => {
     onChange(itemId, title, index);
@@ -22,8 +24,9 @@ export const ListItem = ({
     <TouchableOpacity
       className={`flex flex-row mb-2 p-6 rounded-md items-center max-w-full ${
         index % 2 === 0 ? 'bg-gray-100' : 'bg-white'
-      }`}
+      } ${isActive ? 'opacity-10' : 'opacity-100'}`}
       onPress={() => handleItemPress(id)}
+      onLongPress={drag}
     >
       {imgUrl ? (
         <Image
@@ -65,10 +68,12 @@ export const ListItem = ({
 ListItem.propTypes = {
   id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   onChange: PropTypes.func,
+  drag: PropTypes.func,
   imgUrl: PropTypes.object,
   title: PropTypes.string.isRequired,
   description: PropTypes.string,
   tags: PropTypes.array,
   index: PropTypes.number,
   items: PropTypes.array,
+  isActive: PropTypes.bool,
 };

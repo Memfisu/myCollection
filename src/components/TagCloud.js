@@ -7,6 +7,7 @@ import {
 } from '../slices/collectionsListSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useColorScheme } from 'nativewind';
 
 export const TagCloud = ({ categories }) => {
   if (!categories?.length) {
@@ -15,6 +16,8 @@ export const TagCloud = ({ categories }) => {
 
   const dispatch = useDispatch();
   const selectedTag = useSelector(selectSelectedTag);
+  const { colorScheme } = useColorScheme();
+  const isDarkTheme = colorScheme === 'dark';
 
   const allTags = categories?.flatMap((category) => category?.myTags || []);
   const tagsCounted = allTags.reduce((acc, item) => {
@@ -65,7 +68,7 @@ export const TagCloud = ({ categories }) => {
     <Swiper
       loop={false}
       dotStyle={{ backgroundColor: 'gray' }}
-      activeDotStyle={{ backgroundColor: 'black' }}
+      activeDotStyle={{ backgroundColor: isDarkTheme ? 'white' : 'black' }}
     >
       {pages.map((tags, pageIndex) => (
         <ScrollView
@@ -81,16 +84,24 @@ export const TagCloud = ({ categories }) => {
               key={index}
               className={`h-8 flex flex-row p-2 ${
                 item.value === selectedTag
-                  ? 'bg-gray-600 dark:bg-gray-500'
-                  : 'bg-gray-300 dark:bg-gray-400'
+                  ? isDarkTheme
+                    ? 'bg-violet-800'
+                    : 'bg-gray-600'
+                  : isDarkTheme
+                  ? 'bg-violet-600'
+                  : 'bg-gray-300'
               } rounded-md ${index ? 'ml-2' : ''}`}
               onPress={() => handleTagPress(item.value)}
             >
               <Text
                 className={`text-xs ${
                   item.value === selectedTag
-                    ? 'text-white dark:text-gray-300'
-                    : 'text-black dark:text-gray-900'
+                    ? isDarkTheme
+                      ? 'text-gray-100'
+                      : 'text-white'
+                    : isDarkTheme
+                    ? 'text-gray-300'
+                    : 'text-black'
                 }`}
               >
                 {item.label}
